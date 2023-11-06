@@ -35,7 +35,7 @@ public class TerrainDataImporter : MonoBehaviour
 
                 float latitude = float.Parse(splitLines[0]);
                 float longitude = float.Parse(splitLines[1]);
-                float height = float.Parse(splitLines[3]);
+                float height = float.Parse(splitLines[2]);
                 List<float> point = new List<float>();
 
                 point.Insert(0, latitude);
@@ -46,6 +46,34 @@ public class TerrainDataImporter : MonoBehaviour
                 count += count;
             }
         }
+
+        return points;
     }
+
+    List<List<float>> ScaleData(List<List<float>> points)
+    {
+        int index = 0;
+        foreach (List<float> point in points)
+        {
+            float scalingConstant = 5f;
+
+            float latitude = point[0] * scalingConstant;
+            float longitude = point[1] * scalingConstant;
+            float height = point[2] * scalingConstant;
+
+            points.Remove(point);
+            List<float> scaledPoint = new List<float>();
+
+            scaledPoint.Insert(0, latitude);
+            scaledPoint.Insert(1, longitude);
+            scaledPoint.Insert(2, height);
+
+            points.Insert(index, scaledPoint);
+            index++;
+        }
+
+        return points;
+    }
+
 
 }
