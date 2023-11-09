@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class TerrainDataImporter : MonoBehaviour
 {
+    // Constants for normalizing the height.
+    const float minHeight = -418.9165344238281f;
+    const float maxHeight = -1648.679809570313f;
+
+    // Terrain size constant.
+    const int terrainSize = 3200;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +33,7 @@ public class TerrainDataImporter : MonoBehaviour
     List<List<float>> ReadCSV()
     {
         List<List<float>> points = new List<List<float>>();
-        string path = "/LatitudeLongitudeHeight.csv";
+        string path = "/home/namun/Documents/Unity/MoonVisualizer/Assets/LatitudeLongitudeHeight.csv";
         int count = 0;
         using (StreamReader sr = new StreamReader(path))
         {
@@ -38,12 +45,15 @@ public class TerrainDataImporter : MonoBehaviour
 
                 float latitude = float.Parse(splitLines[0]);
                 float longitude = float.Parse(splitLines[1]);
+
                 float height = float.Parse(splitLines[2]);
+                float normalizedHeight = Mathf.InverseLerp(minHeight, maxHeight, height);
+
                 List<float> point = new List<float>();
 
                 point.Insert(0, latitude);
                 point.Insert(1, longitude);
-                point.Insert(2, height);
+                point.Insert(2, normalizedHeight);
 
                 points.Insert(count, point);
                 count += count;
@@ -97,6 +107,7 @@ public class TerrainDataImporter : MonoBehaviour
 
     TerrainData SetHeights(float[,] points, TerrainData terrainData)
     {
+        terrainData.size = new Vector3(terrainSize, terrainSize, 500);
         terrainData.SetHeights(0, 0, points);
         return terrainData;
     }
