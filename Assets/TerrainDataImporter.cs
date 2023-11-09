@@ -10,8 +10,11 @@ public class TerrainDataImporter : MonoBehaviour
     void Start()
     {
         List<List<float>> points = ReadCSV();
-        Console.WriteLine(points);
+        points = ScaleData(points);
+        float[,] pointArray = ConvertScaledDataTo2DArray(points);
 
+        Terrain terrain = GetComponent<Terrain>();
+        terrain.terrainData = SetHeights(pointArray, terrain.terrainData);
     }
 
     // Update is called once per frame
@@ -23,7 +26,7 @@ public class TerrainDataImporter : MonoBehaviour
     List<List<float>> ReadCSV()
     {
         List<List<float>> points = new List<List<float>>();
-        string path = @"./LatitudeLongitudeHeight.csv";
+        string path = "/LatitudeLongitudeHeight.csv";
         int count = 0;
         using (StreamReader sr = new StreamReader(path))
         {
@@ -44,6 +47,11 @@ public class TerrainDataImporter : MonoBehaviour
 
                 points.Insert(count, point);
                 count += count;
+
+                if (count == 0)
+                {
+                    Console.WriteLine(point);
+                }
             }
         }
 
@@ -76,4 +84,20 @@ public class TerrainDataImporter : MonoBehaviour
     }
 
 
+    float[,] ConvertScaledDataTo2DArray(List<List<float>> points)
+    {
+        float[,] heights = new float[points.Count, points.Count];
+        foreach (List<float> point in points)
+        {
+            heights[(int)Math.Round(point[0]), (int)Math.Round(point[1])] = point[0];
+        }
+
+        return heights;
+    }
+
+    TerrainData SetHeights(float[,] points, TerrainData terrainData)
+    {
+        terrainData.SetHeights(0, 0, points);
+        return terrainData;
+    }
 }
