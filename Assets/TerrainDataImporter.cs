@@ -22,6 +22,8 @@ public class TerrainDataImporter : MonoBehaviour
 
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = SetHeights(pointArray, terrain.terrainData);
+
+        Console.WriteLine("Complete?");
     }
 
     // Update is called once per frame
@@ -93,9 +95,29 @@ public class TerrainDataImporter : MonoBehaviour
     float[,] ConvertScaledDataTo2DArray(List<List<float>> points)
     {
         float[,] heights = new float[3200, 3200];
+        int xIndex = 0;
+        int yIndex = 0;
         foreach (List<float> point in points)
         {
-            heights[(int)Math.Round(point[0]), (int)Math.Round(point[1])] = point[2];
+            heights[xIndex, yIndex] = point[2];
+
+            if (yIndex % 3199 == 0)
+            {
+                yIndex = 0;
+                if (xIndex % 3199 == 0)
+                {
+                    xIndex = 0;
+                }
+                else
+                {
+                    xIndex++;
+                }
+            }
+            else
+            {
+                yIndex++;
+            }
+
         }
 
         return heights;
@@ -103,7 +125,8 @@ public class TerrainDataImporter : MonoBehaviour
 
     TerrainData SetHeights(float[,] points, TerrainData terrainData)
     {
-        terrainData.size = new Vector3(terrainSize, terrainSize, 500);
+        terrainData.heightmapResolution = 3200;
+        terrainData.size = new Vector3(terrainSize, terrainSize, terrainSize);
         terrainData.SetHeights(0, 0, points);
         return terrainData;
     }
