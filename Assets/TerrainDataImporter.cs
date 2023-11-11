@@ -144,7 +144,8 @@ public class TerrainDataImporter : MonoBehaviour
     TerrainData SetHeights(float[,] points, TerrainData terrainData)
     {
         terrainData.heightmapResolution = 3200;
-        terrainData.size = new Vector3(terrainSize, terrainSize, terrainSize);
+        Debug.Log(terrainData.heightmapResolution);
+        terrainData.size = new Vector3(terrainSize, 500, terrainSize);
         terrainData.SetHeights(0, 0, points);
         return terrainData;
     }
