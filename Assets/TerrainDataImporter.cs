@@ -18,12 +18,14 @@ public class TerrainDataImporter : MonoBehaviour
     {
         List<List<float>> points = ReadCSV();
         points = ScaleData(points);
+        Debug.Log("Started conversion to array.");
         float[,] pointArray = ConvertScaledDataTo2DArray(points);
+        Debug.Log("Finished conversion to array.");
 
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = SetHeights(pointArray, terrain.terrainData);
 
-        Console.WriteLine("Complete?");
+        Debug.Log("Complete?");
     }
 
     // Update is called once per frame
@@ -50,6 +52,10 @@ public class TerrainDataImporter : MonoBehaviour
 
                 float height = float.Parse(splitLines[2]);
                 float normalizedHeight = Mathf.InverseLerp(minHeight, maxHeight, height);
+                if (count == 0)
+                {
+                    Debug.Log($"{normalizedHeight}");
+                }
 
                 List<float> point = new List<float>();
 
@@ -88,37 +94,49 @@ public class TerrainDataImporter : MonoBehaviour
             index++;
         }
 
-        return points;
+        return scaledPoints;
     }
 
 
     float[,] ConvertScaledDataTo2DArray(List<List<float>> points)
     {
         float[,] heights = new float[3200, 3200];
-        int xIndex = 0;
-        int yIndex = 0;
-        foreach (List<float> point in points)
+        // int xIndex = 0;
+        // int yIndex = 0;
+        int mainIndex = 0;
+        // foreach (List<float> point in points)
+        // {
+        //     heights[xIndex, yIndex] = point[2];
+
+        // if (++yIndex >= 3200)
+        // {
+        //     yIndex = 0;
+        //     if (++xIndex >= 3200)
+        //     {
+        //         xIndex = 0;
+        //     }
+        //     else
+        //     {
+        //         xIndex++;
+        //     }
+        // }
+        // else
+        // {
+        //     yIndex++;
+        //     xIndex = 0;
+        // }
+
+        // }
+        for (int x = 0; x < 3200; x++)
         {
-            heights[xIndex, yIndex] = point[2];
-
-            if (yIndex % 3199 == 0)
+            for (int y = 0; y < 3200; y++)
             {
-                yIndex = 0;
-                if (xIndex % 3199 == 0)
-                {
-                    xIndex = 0;
-                }
-                else
-                {
-                    xIndex++;
-                }
+                List<float> point = points[mainIndex];
+                heights[x, y] = point[2];
+                mainIndex++;
             }
-            else
-            {
-                yIndex++;
-            }
-
         }
+
 
         return heights;
     }
