@@ -145,7 +145,7 @@ public class TerrainDataImporter : MonoBehaviour
     {
         terrainData.heightmapResolution = 3200;
         Debug.Log(terrainData.heightmapResolution);
-        terrainData.size = new Vector3(terrainSize, 500, terrainSize);
+        terrainData.size = new Vector3(terrainSize, 300, terrainSize);
         terrainData.SetHeights(0, 0, points);
         return terrainData;
     }
