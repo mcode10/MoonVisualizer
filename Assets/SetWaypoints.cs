@@ -22,7 +22,7 @@ public class SetWaypoints : MonoBehaviour
     const float earthX = 1623.678285f;
     const float earthY = 590.9705659f;
     const float earthZ = -181.6077521f;
-    const Vector3 earth = new Vector3(earthX, earthY, earthZ);
+    Vector3 earth = new Vector3(earthX, earthY, earthZ);
 
     // Distance to calculate slope for elevation angle calculations.
     const float slopeDistance = 0.1f;
@@ -60,26 +60,28 @@ public class SetWaypoints : MonoBehaviour
 
         for (int segmentNumber = 0; segmentNumber < 10; segmentNumber++)
         {
-            (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners);
-            if (PointIsViableWaypoint(nearestCorner))
+            bool foundWaypoint = false;
+            int cornerRecursion = 0;
+            (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
+
+            while (!foundWaypoint)
             {
-                waypoint.Add(nearestCorner);
-            }
-            else
-            {
-                if (PointIsViableWaypoint(fartherCorner))
+                if (PointIsViableWaypoint(nearestCorner))
                 {
-                    waypoint.Add(fartherCorner);
+                    Vector3 waypoint = nearestCorner;
+                    foundWaypoint == true;
                 }
                 else
                 {
-                    nearestMidpoint = FindNearestMidpoint(nearestCorner);
-                    Vector3 trueWaypoint;
-                    while (!PointIsViableWaypoint(nearestCorner))
+
+                    if (PointIsViableWaypoint(fartherCorner))
                     {
-                        // Code to increment midpoint to search viable waypoint.
+                        Vector3 waypoint = fartherCorner;
+                        foundWaypoint == true;
                     }
                 }
+
+                cornerRecursion++;
             }
         }
 
@@ -283,5 +285,12 @@ public class SetWaypoints : MonoBehaviour
 
         return Mathf.Asin(rz / range);
     }
-    void SetWaypoints(Vector3[] waypoints) { }
+    void CreateWaypoints(Vector3[] waypoints)
+    {
+        foreach (Vector3 waypoint in waypoints)
+        {
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.position = waypoint;
+        }
+    }
 }
