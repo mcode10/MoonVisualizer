@@ -36,25 +36,25 @@ public class SetWaypoints : MonoBehaviour
     void Start()
     {
         // Get the necessary Unity Game Objects.
-        NavMeshAgent navmesh = something.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        NavMeshPath path = navmesh.path;
+        UnityEngine.AI.NavMeshAgent navmesh = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        UnityEngine.AI.NavMeshPath path = navmesh.path;
         terrain = GetComponent<Terrain>();
         terrainData = terrain.terrainData;
 
         Vector3 startPoint;
-        Vector3[] waypoints = FindWaypoints(path);
+        List<Vector3> waypoints = FindWaypoints(path);
 
-        SetWaypoints(waypoints);
+        CreateWaypoints(waypoints);
     }
 
     void Update() { }
 
-    Vector3[] FindWaypoints(UnityEngine.AI.NavMeshPath path)
+    List<Vector3> FindWaypoints(UnityEngine.AI.NavMeshPath path)
     {
         Vector3[] pathCorners = path.corners;
         float totalPathDistance = CalculatePathDistance(pathCorners);
         float segmentLength = totalPathDistance / 11f;
-        Vector3[] waypoints = new Vector3[];
+        List<Vector3> waypoints = new List<Vector3>();
 
         List<float> segments = new List<float>();
 
@@ -69,7 +69,7 @@ public class SetWaypoints : MonoBehaviour
                 if (PointIsViableWaypoint(nearestCorner))
                 {
                     Vector3 waypoint = nearestCorner;
-                    foundWaypoint == true;
+                    foundWaypoint = true;
                 }
                 else
                 {
@@ -77,7 +77,7 @@ public class SetWaypoints : MonoBehaviour
                     if (PointIsViableWaypoint(fartherCorner))
                     {
                         Vector3 waypoint = fartherCorner;
-                        foundWaypoint == true;
+                        foundWaypoint = true;
                     }
                 }
 
@@ -92,19 +92,19 @@ public class SetWaypoints : MonoBehaviour
     {
         float pathDistance = 0f;
         bool initialPoint = true;
-        Vector3 previousPoint;
+        Vector3 previousPoint = pathCorners[0];
         foreach (Vector3 corner in pathCorners)
         {
             if (initialPoint == true)
             {
-                float segmentDistance = Vector3.distance(previousPoint, corner);
-                pathDistance = pathDistance + segmentDistance;
                 previousPoint = corner;
+                initialPoint = false;
             }
             else
             {
+                float segmentDistance = Vector3.Distance(previousPoint, corner);
+                pathDistance = pathDistance + segmentDistance;
                 previousPoint = corner;
-                initialPoint = false;
             }
         }
 
@@ -115,18 +115,14 @@ public class SetWaypoints : MonoBehaviour
     {
         int averageCornersPerSegment = (int)MathF.Floor(pathCorners.Length / 11);
         float pointDistance = segmentNumber * segmentLength;
-        float totalDistance = 0;
+        float totalDistance = 0f;
         int cornerIndex = 0;
         // Find the corner that is just past the distance we are looking for.
         while (totalDistance < pointDistance)
         {
-            if (cornerIndex == 0)
+            if (cornerIndex != 0)
             {
-                totalDistance = startPoint + Vector3.Distance(startPoint, pathCorners[cornerIndex]);
-            }
-            else
-            {
-                totalDistance = totalDistance + Vector3.Distance(pathCorners[cornerIndex], pathCorners[cornerIndex + 1]);
+                totalDistance = totalDistance + Vector3.Distance(pathCorners[cornerIndex - 1], pathCorners[cornerIndex]);
             }
             cornerIndex++;
         }
@@ -141,9 +137,6 @@ public class SetWaypoints : MonoBehaviour
         float midY = (secondCorner.y + firstCorner.y) / 2;
         float midZ = (secondCorner.z + firstCorner.z) / 2;
         Vector3 segmentMidpoint = new Vector3(midX, midY, midZ);
-
-        // Initialize the point that will be returned.
-        Vector3 idealCorner;
 
         // Determine which corner is closer.
         if (Vector3.Distance(segmentMidpoint, secondCorner) < Vector3.Distance(segmentMidpoint, firstCorner))
@@ -163,8 +156,8 @@ public class SetWaypoints : MonoBehaviour
         Vector3 cartesianPoint = CartesianConversion(latitude, longitude);
 
         float azimuthToEarth = AzimuthToEarth(latitude, longitude);
-        float elevationAngleToEarth = ElevationAngleToEarth(azimuthToEarth);
-        float elevationAngleOfTerrain = ElevationAngleOfTerrain(azimuthToEarth);
+        float elevationAngleToEarth = ElevationAngleToEarth(cartesianPoint);
+        float elevationAngleOfTerrain = ElevationAngleOfTerrain(cartesianPoint, azimuthToEarth);
 
         if (elevationAngleOfTerrain < elevationAngleToEarth)
         {
@@ -181,20 +174,20 @@ public class SetWaypoints : MonoBehaviour
         float unityX = point.x;
         float unityY = point.y;
 
-        float interpolatedX = Mathf.InverseLerp(0, 2499, x);
-        float interpolatedY = Mathf.InverseLerp(0, 2499, y);
+        float interpolatedX = Mathf.InverseLerp(0, 2499, unityX);
+        float interpolatedY = Mathf.InverseLerp(0, 2499, unityY);
 
         float latitude = Mathf.Lerp(minLatitude, maxLatitude, interpolatedX);
-        float longitude = Mathf.Lerp(minLongitude, maxLongtitude, interpolatedX);
+        float longitude = Mathf.Lerp(minLongitude, maxLongitude, interpolatedY);
 
         return (latitude, longitude);
     }
 
     Vector3 CartesianConversion(float latitude, float longitude)
     {
-        x = lunarRadius * Mathf.Cos(latitude) * Mathf.Cos(longitude);
-        y = lunarRadius * Mathf.Cos(latitude) * Mathf.Sin(longitude);
-        z = lunarRadius * Mathf.Sin(latitude);
+        float x = lunarRadius * Mathf.Cos(latitude) * Mathf.Cos(longitude);
+        float y = lunarRadius * Mathf.Cos(latitude) * Mathf.Sin(longitude);
+        float z = lunarRadius * Mathf.Sin(latitude);
 
         return new Vector3(x, y, z);
     }
@@ -205,15 +198,17 @@ public class SetWaypoints : MonoBehaviour
         float longitudeInRadians = DegreesToRadians(longitude);
         float x = (Mathf.Sin(longitudeInRadians - earthLongitude) * Mathf.Cos(earthLatitude));
         float y = ((Mathf.Cos(latitudeInRadians) * Mathf.Sin(earthLatitude)) - (Mathf.Sin(latitudeInRadians) * Mathf.Cos(earthLatitude) * Mathf.Cos(earthLongitude - longitudeInRadians)));
-        float azimuthAngle = Atan2(x, y);
+        Vector3 XYCoordinate = new Vector3(x, y, 0f);
+        float azimuthAngle = Atan2(XYCoordinate);
 
         return azimuthAngle;
     }
 
     float Atan2(Vector3 coordinate)
     {
-        float atan2_result = coordinate switch
+        float atan2_result = switch (coordinate)
         {
+            case.x > 0
             (coordinate.x > 0) => AtanWhereXGreaterThanZero(coordinate),
             (coordinate.x < 0) && (coordinate.y >= 0) => AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate),
             (coordinate.x < 0) && (coordinate.y < 0) => AtanWhereXAndYLessThanZero(coordinate),
@@ -285,7 +280,7 @@ public class SetWaypoints : MonoBehaviour
 
         return Mathf.Asin(rz / range);
     }
-    void CreateWaypoints(Vector3[] waypoints)
+    void CreateWaypoints(List<Vector3> waypoints)
     {
         foreach (Vector3 waypoint in waypoints)
         {
