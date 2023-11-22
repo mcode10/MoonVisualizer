@@ -38,13 +38,15 @@ public class SetWaypoints : MonoBehaviour
         // Get the necessary Unity Game Objects.
         UnityEngine.AI.NavMeshAgent navmesh = GetComponent<UnityEngine.AI.NavMeshAgent>();
         UnityEngine.AI.NavMeshPath path = navmesh.path;
-        terrain = GetComponent<Terrain>();
+        // Replace with FindObjectOfType<Terrain>() at some point.
+        terrain = FindObjectOfType<Terrain>();
         terrainData = terrain.terrainData;
 
         Vector3 startPoint;
         List<Vector3> waypoints = FindWaypoints(path);
 
         CreateWaypoints(waypoints);
+        Debug.Log(waypoints);
     }
 
     void Update() { }
@@ -60,6 +62,8 @@ public class SetWaypoints : MonoBehaviour
 
         for (int segmentNumber = 0; segmentNumber < 10; segmentNumber++)
         {
+            Debug.Log("Started new segment calculations.");
+            Debug.Log(segmentNumber);
             bool foundWaypoint = false;
             int cornerRecursion = 0;
             (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
@@ -84,6 +88,7 @@ public class SetWaypoints : MonoBehaviour
                 cornerRecursion++;
             }
         }
+
 
         return waypoints;
     }
@@ -129,7 +134,9 @@ public class SetWaypoints : MonoBehaviour
 
 
         // Set that and the corner just ahead of the distance we are looking for as the corners to compare.
-        Vector3 secondCorner = pathCorners[cornerIndex - recursion];
+        Debug.Log(pathCorners.ToString());
+        Debug.Log(cornerIndex);
+        Vector3 secondCorner = pathCorners[cornerIndex - 1 - recursion];
         Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
 
         // Find the midpoint of the target segment.
@@ -206,18 +213,23 @@ public class SetWaypoints : MonoBehaviour
 
     float Atan2(Vector3 coordinate)
     {
-        float atan2_result = switch (coordinate)
+        switch ((coordinate.x, coordinate.y))
         {
-            case.x > 0
-            (coordinate.x > 0) => AtanWhereXGreaterThanZero(coordinate),
-            (coordinate.x < 0) && (coordinate.y >= 0) => AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate),
-            (coordinate.x < 0) && (coordinate.y < 0) => AtanWhereXAndYLessThanZero(coordinate),
-            (coordinate.x == 0) && (coordinate.y > 0) => AtanWhereXEqualAndYGreaterThanZero(coordinate),
-            (coordinate.x == 0) && (coordinate.y < 0) => AtanWhereXEqualAndYLessThanZero(coordinate),
-            (coordinate.x == 0) && (coordinate.y == 0) => throw new ArgumentException("Invalid input for atan calculation")
-        };
-
-        return atan2_result;
+            case ( > 0, _):
+                return AtanWhereXGreaterThanZero(coordinate);
+            case ( < 0, >= 0):
+                return AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate);
+            case ( < 0, < 0):
+                return AtanWhereXAndYLessThanZero(coordinate);
+            case (_, > 0) when coordinate.x == 0:
+                return AtanWhereXEqualAndYGreaterThanZero(coordinate);
+            case (_, < 0) when coordinate.x == 0:
+                return AtanWhereXEqualAndYLessThanZero(coordinate);
+            case (_, _) when (coordinate.x == 0) && (coordinate.y == 0):
+                return 22348f;
+            default:
+                return 22349f;
+        }
     }
 
     float AtanWhereXGreaterThanZero(Vector3 coordinate)
@@ -262,7 +274,7 @@ public class SetWaypoints : MonoBehaviour
         float xDistanceForSlope = (slopeDistance * Mathf.Cos(azimuthAngle));
         float yDistanceForSlope = (slopeDistance * Mathf.Sin(azimuthAngle));
 
-        float heightForSlope = terrainData.GetHeights(point.x + xDistanceForSlope, point.y + yDistanceForSlope);
+        float heightForSlope = terrainData.GetInterpolatedHeight(point.x + xDistanceForSlope, point.y + yDistanceForSlope);
 
         float elevationAngle = Mathf.Atan(heightForSlope / slopeDistance);
 
@@ -275,7 +287,7 @@ public class SetWaypoints : MonoBehaviour
         float yPointToEarth = point.y - earth.y;
         float zPointToEarth = point.z - earth.z;
 
-        float range = Mathf.Sqrt((xPointToEarth ^ 2) + (yPointToEarth ^ 2) + (zPointToEarth ^ 2));
+        float range = Mathf.Sqrt(Mathf.Pow(xPointToEarth, 2f) + Mathf.Pow(yPointToEarth, 2f) + Mathf.Pow(zPointToEarth, 2f));
         float rz = (Mathf.Cos(earthLatitude) * Mathf.Cos(earthLongitude)) + (Mathf.Cos(earthLatitude) * Mathf.Sin(earthLongitude)) + Mathf.Sin(earthLongitude);
 
         return Mathf.Asin(rz / range);
