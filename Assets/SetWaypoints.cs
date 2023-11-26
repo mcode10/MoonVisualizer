@@ -134,7 +134,7 @@ public class SetWaypoints : MonoBehaviour
 
 
         // Set that and the corner just ahead of the distance we are looking for as the corners to compare.
-        Debug.Log(pathCorners.ToString());
+        Debug.Log(pathCorners.Length);
         Debug.Log(cornerIndex);
         Vector3 secondCorner = pathCorners[cornerIndex - 1 - recursion];
         Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
@@ -274,7 +274,8 @@ public class SetWaypoints : MonoBehaviour
         float xDistanceForSlope = (slopeDistance * Mathf.Cos(azimuthAngle));
         float yDistanceForSlope = (slopeDistance * Mathf.Sin(azimuthAngle));
 
-        float heightForSlope = terrainData.GetInterpolatedHeight(point.x + xDistanceForSlope, point.y + yDistanceForSlope);
+        Vector3 slopeSamplePoint = PointFromClosestTerrain(new Vector3(point.x + xDistanceForSlope, 0f, point.z + yDistanceForSlope));
+        float heightForSlope = point.y - slopeSamplePoint.y;
 
         float elevationAngle = Mathf.Atan(heightForSlope / slopeDistance);
 
