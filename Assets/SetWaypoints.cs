@@ -293,6 +293,7 @@ public class SetWaypoints : MonoBehaviour
 
         return Mathf.Asin(rz / range);
     }
+
     void CreateWaypoints(List<Vector3> waypoints)
     {
         foreach (Vector3 waypoint in waypoints)
@@ -300,5 +301,47 @@ public class SetWaypoints : MonoBehaviour
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = waypoint;
         }
+    }
+
+    Vector3 PointFromClosestTerrain(Vector3 position)
+    {
+        Terrain terrain = GetClosestCurrentTerrain(position);
+
+        position.y = terrain.SampleHeight(position);
+
+        return position;
+    }
+
+    Terrain GetClosestCurrentTerrain(Vector3 position)
+    {
+        //Get all terrain
+        Terrain[] terrains = Terrain.activeTerrains;
+
+        //Make sure that terrains length is ok
+        if (terrains.Length == 0)
+            return null;
+
+        //If just one, return that one terrain
+        if (terrains.Length == 1)
+            return terrains[0];
+
+        //Get the closest one to the player
+        float lowDist = (terrains[0].GetPosition() - position).sqrMagnitude;
+        var terrainIndex = 0;
+
+        for (int i = 1; i < terrains.Length; i++)
+        {
+            Terrain terrain = terrains[i];
+            Vector3 terrainPos = terrain.GetPosition();
+
+            //Find the distance and check if it is lower than the last one then store it
+            var dist = (terrainPos - position).sqrMagnitude;
+            if (dist < lowDist)
+            {
+                lowDist = dist;
+                terrainIndex = i;
+            }
+        }
+        return terrains[terrainIndex];
     }
 }
