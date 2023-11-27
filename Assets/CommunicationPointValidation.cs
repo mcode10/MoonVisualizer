@@ -4,21 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public struct Coordinate
-{
-    Coordinate(float x, float y, float z)
-    {
-        X = x;
-        Y = y;
-        Z = z;
-    }
+// public struct Coordinate
+// {
+//     Coordinate(float x, float y, float z)
+//     {
+//         X = x;
+//         Y = y;
+//         Z = z;
+//     }
 
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float Z { get; set; }
+//     public float X { get; set; }
+//     public float Y { get; set; }
+//     public float Z { get; set; }
 
-    public override string ToString() => $"[{X}, {Y}, {Z}]";
-}
+//     public override string ToString() => $"[{X}, {Y}, {Z}]";
+// }
 
 public struct LongitudeLatitude
 {
@@ -37,11 +37,11 @@ public struct LongitudeLatitude
 public class CommunicationPointValidation : MonoBehaviour
 {
     // The Lunar radius.
-    const float lunarRadius = 1737.4;
+    const float lunarRadius = 1737.4f;
 
     // These are DUMMY values.
-    const float earthLongitude = 232.23;
-    const float earthLatitude = 232.23;
+    const float earthLongitude = 232.23f;
+    const float earthLatitude = 232.23f;
     // Start is called before the first frame update
     void Start()
     {
@@ -54,90 +54,76 @@ public class CommunicationPointValidation : MonoBehaviour
 
     }
 
-    Float AzimuthAngleToEarth(LongitudeLatitude longitudeLatitude)
-    {
-        float longitude = LongitudeLatitude.Longitude;
-        float latitude = LongitudeLatitude.Latitude;
+    // float AzimuthAngleToEarth(LongitudeLatitude longitudeLatitude)
+    // {
+    //     float longitude = LongitudeLatitude.Longitude;
+    //     float latitude = LongitudeLatitude.Latitude;
 
-        Float azimuthAngle = Atan2(MathF.Sin());
-    }
+    //     float azimuthAngle = Atan2(MathF.Sin());
+    // }
 
-    bool IsPointValid(Coordinate coordinate)
+    bool IsPointValid(Vector3 coordinate)
     {
 
         return false;
     }
 
-    Float Atan2(Coordinate coordinate)
-    {
-        switch (coordinate)
-        {
-            case coordinate.X > 0:
-                float atan2_result = AtanWhereXGreaterThanZero(point);
-                break;
-            case (coordinate.X < 0) && (coordinate.Y >= 0):
-                float atan2_result = AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate);
-                break;
-            case (coordinate.X < 0) && (coordinate.Y < 0):
-                float atan2_result = AtanWhereXAndYLessThanZero(coordinate);
-                break;
-            case (coordinate.X == 0) && (coordinate.Y > 0):
-                float atan2_result = AtanWhereXEqualAndYGreaterThanZero(coordinate);
-                break;
-            case (coordinate.X == 0) && (coordinate.Y < 0):
-                float atan2_result = AtanWhereXEqualAndYLessThanZero(coordinate);
-                break;
-            case (coordinate.X == 0) && (coordinate.Y == 0):
-                throw new ArgumentException("Invalid input for atan calculation", coordinate);
-                break;
-            default:
-                throw new ArgumentException("Bad inputs", coordinate);
-                break;
-        };
+    // float Atan2(Vector3 coordinate)
+    // {
+    //     float atan2_result = coordinate switch
+    //     {
+    //         (coordinate.x > 0) => AtanWhereXGreaterThanZero(coordinate),
+    //         (coordinate.x < 0) && (coordinate.y >= 0) => AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate),
+    //         (coordinate.x < 0) && (coordinate.y < 0) => AtanWhereXAndYLessThanZero(coordinate),
+    //         (coordinate.x == 0) && (coordinate.y > 0) => AtanWhereXEqualAndYGreaterThanZero(coordinate),
+    //         (coordinate.x == 0) && (coordinate.y < 0) => AtanWhereXEqualAndYLessThanZero(coordinate),
+    //         (coordinate.x == 0) && (coordinate.y == 0) => throw new ArgumentException("Invalid input for atan calculation"),
+    //         _ => throw new ArgumentException("Invalid input for atan calculation"),
+    //     };
 
-        return atan2_result;
-    }
+    //     return atan2_result;
+    // }
 
-    float AtanWhereXGreaterThanZero(Coordinate coordinate)
+    float AtanWhereXGreaterThanZero(Vector3 coordinate)
     {
-        float yDividedByX = coordinate.Y / coordinate.X;
+        float yDividedByX = coordinate.y / coordinate.x;
 
         return MathF.Atan(yDividedByX);
     }
 
-    float AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(Coordinate coordinate)
+    float AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(Vector3 coordinate)
     {
-        float yDividedByXPlusPi = (coordinate.Y / coordinate.X) + Math.Pi;
+        float yDividedByXPlusPi = (coordinate.y / coordinate.x) + MathF.PI;
 
         return MathF.Atan(yDividedByXPlusPi);
 
     }
 
-    float AtanWhereXAndYLessThanZero(Coordinate coordinate)
+    float AtanWhereXAndYLessThanZero(Vector3 coordinate)
     {
-        float yDividedByXMinusPi = (coordinate.Y / coordinate.X) + Math.Pi;
+        float yDividedByXMinusPi = (coordinate.y / coordinate.x) + MathF.PI;
 
         return MathF.Atan(yDividedByXMinusPi);
     }
 
-    float AtanWhereXEqualAndYGreaterThanZero(Coordinate coordinate)
+    float AtanWhereXEqualAndYGreaterThanZero(Vector3 coordinate)
     {
-        return Math.Pi / 2;
+        return MathF.PI / 2f;
     }
 
-    float AtanWhereXEqualAndYLessThanZero(Coordinate coordinate)
+    float AtanWhereXEqualAndYLessThanZero(Vector3 coordinate)
     {
-        return Math.Pi / -2;
+        return MathF.PI / -2f;
     }
 
-    Coordinate ConvertLatitudeAndLongitudeToCoordinate(float terrainHeight, float longitude, float latitude)
+    Vector3 ConvertLatitudeAndLongitudeToCoordinate(float terrainHeight, float longitude, float latitude)
     {
         float radius = lunarRadius + terrainHeight;
         float x = radius * MathF.Cos(latitude) * MathF.Cos(longitude);
         float y = radius * MathF.Cos(latitude) * MathF.Sin(longitude);
         float z = radius * MathF.Sin(latitude);
 
-        return new Point(x, y, z);
+        return new Vector3(x, y, z);
     }
 
     // LongitudeLatitude ConvertCoordinateToLongitudeLatitude() {}
