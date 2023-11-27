@@ -205,63 +205,9 @@ public class SetWaypoints : MonoBehaviour
         float longitudeInRadians = DegreesToRadians(longitude);
         float x = (Mathf.Sin(longitudeInRadians - earthLongitude) * Mathf.Cos(earthLatitude));
         float y = ((Mathf.Cos(latitudeInRadians) * Mathf.Sin(earthLatitude)) - (Mathf.Sin(latitudeInRadians) * Mathf.Cos(earthLatitude) * Mathf.Cos(earthLongitude - longitudeInRadians)));
-        Vector3 XYCoordinate = new Vector3(x, y, 0f);
-        float azimuthAngle = Atan2(XYCoordinate);
+        float azimuthAngle = Mathf.Atan2(y, x);
 
         return azimuthAngle;
-    }
-
-    float Atan2(Vector3 coordinate)
-    {
-        switch ((coordinate.x, coordinate.y))
-        {
-            case ( > 0, _):
-                return AtanWhereXGreaterThanZero(coordinate);
-            case ( < 0, >= 0):
-                return AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(coordinate);
-            case ( < 0, < 0):
-                return AtanWhereXAndYLessThanZero(coordinate);
-            case (_, > 0) when coordinate.x == 0:
-                return AtanWhereXEqualAndYGreaterThanZero(coordinate);
-            case (_, < 0) when coordinate.x == 0:
-                return AtanWhereXEqualAndYLessThanZero(coordinate);
-            case (_, _) when (coordinate.x == 0) && (coordinate.y == 0):
-                return 22348f;
-            default:
-                return 22349f;
-        }
-    }
-
-    float AtanWhereXGreaterThanZero(Vector3 coordinate)
-    {
-        float yDividedByX = coordinate.y / coordinate.x;
-
-        return Mathf.Atan(yDividedByX);
-    }
-
-    float AtanWhereXLessThanZeroAndYGreaterThanOrEqualToZero(Vector3 coordinate)
-    {
-        float yDividedByXPlusPi = (coordinate.y / coordinate.x) + Mathf.PI;
-
-        return Mathf.Atan(yDividedByXPlusPi);
-
-    }
-
-    float AtanWhereXAndYLessThanZero(Vector3 coordinate)
-    {
-        float yDividedByXMinusPi = (coordinate.y / coordinate.x) + Mathf.PI;
-
-        return Mathf.Atan(yDividedByXMinusPi);
-    }
-
-    float AtanWhereXEqualAndYGreaterThanZero(Vector3 coordinate)
-    {
-        return Mathf.PI / 2f;
-    }
-
-    float AtanWhereXEqualAndYLessThanZero(Vector3 coordinate)
-    {
-        return Mathf.PI / -2f;
     }
 
     float DegreesToRadians(float degreeValue)
