@@ -17,6 +17,8 @@ public class SetWaypoints : MonoBehaviour
     // Reference latitude and longitude for Earth.
     const float earthLatitude = -6f;
     const float earthLongitude = 20f;
+    const float earthLatitudeInRadians = earthLatitude * Mathf.Deg2Rad;
+    const float earthLongitudeInRadians = earthLongitude * Mathf.Deg2Rad;
 
     // The corresponding cartersian coordinates.
     const float earthX = 1623.678285f;
@@ -73,6 +75,7 @@ public class SetWaypoints : MonoBehaviour
                 if (PointIsViableWaypoint(nearestCorner))
                 {
                     Vector3 waypoint = nearestCorner;
+                    waypoints.Add(waypoint);
                     foundWaypoint = true;
                 }
                 else
@@ -81,6 +84,7 @@ public class SetWaypoints : MonoBehaviour
                     if (PointIsViableWaypoint(fartherCorner))
                     {
                         Vector3 waypoint = fartherCorner;
+                        waypoints.Add(waypoint);
                         foundWaypoint = true;
                     }
                 }
@@ -89,7 +93,10 @@ public class SetWaypoints : MonoBehaviour
             }
         }
 
-
+        if (cornerRecursion > 5)
+        {
+            break;
+        }
         return waypoints;
     }
 
@@ -192,9 +199,9 @@ public class SetWaypoints : MonoBehaviour
 
     Vector3 CartesianConversion(float latitude, float longitude)
     {
-        float x = lunarRadius * Mathf.Cos(latitude) * Mathf.Cos(longitude);
-        float y = lunarRadius * Mathf.Cos(latitude) * Mathf.Sin(longitude);
-        float z = lunarRadius * Mathf.Sin(latitude);
+        float x = lunarRadius * Mathf.Cos(latitude * Mathf.Deg2Rad) * Mathf.Cos(longitude * Mathf.Deg2Rad);
+        float y = lunarRadius * Mathf.Cos(latitude * Mathf.Deg2Rad) * Mathf.Sin(longitude * Mathf.Deg2Rad);
+        float z = lunarRadius * Mathf.Sin(latitude * Mathf.Deg2Rad);
 
         return new Vector3(x, y, z);
     }
@@ -203,8 +210,8 @@ public class SetWaypoints : MonoBehaviour
     {
         float latitudeInRadians = DegreesToRadians(latitude);
         float longitudeInRadians = DegreesToRadians(longitude);
-        float x = (Mathf.Sin(longitudeInRadians - earthLongitude) * Mathf.Cos(earthLatitude));
-        float y = ((Mathf.Cos(latitudeInRadians) * Mathf.Sin(earthLatitude)) - (Mathf.Sin(latitudeInRadians) * Mathf.Cos(earthLatitude) * Mathf.Cos(earthLongitude - longitudeInRadians)));
+        float x = (Mathf.Sin(longitudeInRadians - earthLongitudeInRadians) * Mathf.Cos(earthLatitudeInRadians));
+        float y = ((Mathf.Cos(latitudeInRadians) * Mathf.Sin(earthLatitudeInRadians)) - (Mathf.Sin(latitudeInRadians) * Mathf.Cos(earthLatitudeInRadians) * Mathf.Cos(earthLongitudeInRadians - longitudeInRadians)));
         float azimuthAngle = Mathf.Atan2(y, x);
 
         return azimuthAngle;
@@ -234,8 +241,14 @@ public class SetWaypoints : MonoBehaviour
         float yPointToEarth = point.y - earth.y;
         float zPointToEarth = point.z - earth.z;
 
+        float earthLatitudeRadians = earthLatitude * Mathf.Deg2Rad;
+        float earthLongitudeRadians = earthLongitude * Mathf.Deg2Rad;
+
         float range = Mathf.Sqrt(Mathf.Pow(xPointToEarth, 2f) + Mathf.Pow(yPointToEarth, 2f) + Mathf.Pow(zPointToEarth, 2f));
-        float rz = (Mathf.Cos(earthLatitude) * Mathf.Cos(earthLongitude)) + (Mathf.Cos(earthLatitude) * Mathf.Sin(earthLongitude)) + Mathf.Sin(earthLongitude);
+        float rz1 = xPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Cos(earthLongitudeRadians);
+        float rz2 = yPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Sin(earthLongitudeRadians);
+        float rz3 = zPointToEarth * Mathf.Sin(earthLongitudeRadians);
+        float rz = rz1 + rz2 + rz3;
 
         return Mathf.Asin(rz / range);
     }
