@@ -20,7 +20,7 @@ public class SetWaypoints : MonoBehaviour
     const float earthLatitudeInRadians = earthLatitude * Mathf.Deg2Rad;
     const float earthLongitudeInRadians = earthLongitude * Mathf.Deg2Rad;
 
-    // The corresponding cartersian coordinates.
+    // The corresponding cartesian coordinates.
     const float earthX = 1623.678285f;
     const float earthY = 590.9705659f;
     const float earthZ = -181.6077521f;
@@ -28,12 +28,6 @@ public class SetWaypoints : MonoBehaviour
 
     // Distance to calculate slope for elevation angle calculations.
     const float slopeDistance = 0.1f;
-
-    // Initialize the terrain as a global object to allow access from multiple
-    // functions.
-    Terrain terrain;
-    TerrainData terrainData;
-
 
     void Start()
     {
@@ -70,6 +64,10 @@ public class SetWaypoints : MonoBehaviour
             int cornerRecursion = 0;
             (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
 
+            // Continue finding corners that are progressively further, then
+            // verify if they satisfy the constraint. Once they do, add them as
+            // a waypoint. Finally, break the loop if the recursion becomes too
+            // deep.
             while (!foundWaypoint)
             {
                 if (PointIsViableWaypoint(nearestCorner))
@@ -91,12 +89,13 @@ public class SetWaypoints : MonoBehaviour
 
                 cornerRecursion++;
             }
+
+            if (cornerRecursion > 5)
+            {
+                break;
+            }
         }
 
-        if (cornerRecursion > 5)
-        {
-            break;
-        }
         return waypoints;
     }
 
