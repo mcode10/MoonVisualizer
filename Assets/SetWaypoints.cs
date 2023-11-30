@@ -88,11 +88,11 @@ public class SetWaypoints : MonoBehaviour
                 }
 
                 cornerRecursion++;
-            }
 
-            if (cornerRecursion > 5)
-            {
-                break;
+                if (cornerRecursion > 5)
+                {
+                    break;
+                }
             }
         }
 
