@@ -35,8 +35,8 @@ public class SetWaypoints : MonoBehaviour
         UnityEngine.AI.NavMeshAgent navmesh = GetComponent<UnityEngine.AI.NavMeshAgent>();
         UnityEngine.AI.NavMeshPath path = navmesh.path;
         // Replace with FindObjectOfType<Terrain>() at some point.
-        terrain = FindObjectOfType<Terrain>();
-        terrainData = terrain.terrainData;
+        // terrain = FindObjectOfType<Terrain>();
+        // terrainData = terrain.terrainData;
 
         Vector3 startPoint;
         List<Vector3> waypoints = FindWaypoints(path);
@@ -209,7 +209,7 @@ public class SetWaypoints : MonoBehaviour
     {
         float latitudeInRadians = DegreesToRadians(latitude);
         float longitudeInRadians = DegreesToRadians(longitude);
-        float x = (Mathf.Sin(longitudeInRadians - earthLongitudeInRadians) * Mathf.Cos(earthLatitudeInRadians));
+        float x = (Mathf.Sin(earthLongitudeInRadians - longitudeInRadians) * Mathf.Cos(earthLatitudeInRadians));
         float y = ((Mathf.Cos(latitudeInRadians) * Mathf.Sin(earthLatitudeInRadians)) - (Mathf.Sin(latitudeInRadians) * Mathf.Cos(earthLatitudeInRadians) * Mathf.Cos(earthLongitudeInRadians - longitudeInRadians)));
         float azimuthAngle = Mathf.Atan2(y, x);
 
