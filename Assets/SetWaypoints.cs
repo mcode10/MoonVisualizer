@@ -142,7 +142,7 @@ public class SetWaypoints : MonoBehaviour
         Debug.Log(pathCorners.Length);
         Debug.Log(cornerIndex);
         Vector3 secondCorner = new Vector3(0f, 0f, 0f);
-        if (pathCorners[cornerIndex - 1 - recursion] >= 0)
+        if ((cornerIndex - 1 - recursion) >= 0)
         {
             secondCorner = pathCorners[cornerIndex - 1 - recursion];
         }
@@ -151,7 +151,7 @@ public class SetWaypoints : MonoBehaviour
             secondCorner = pathCorners[0];
         }
         Vector3 firstCorner = new Vector3(0f, 0f, 0f);
-        if (pathCorners[cornerIndex + 1 + recursion] > (pathCorners.Length - 1))
+        if ((cornerIndex + 1 + recursion) > (pathCorners.Length - 1))
         {
             Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
         }
