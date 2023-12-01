@@ -38,7 +38,6 @@ public class SetWaypoints : MonoBehaviour
         // terrain = FindObjectOfType<Terrain>();
         // terrainData = terrain.terrainData;
 
-        Vector3 startPoint;
         List<Vector3> waypoints = FindWaypoints(path);
 
         CreateWaypoints(waypoints);
@@ -164,21 +163,37 @@ public class SetWaypoints : MonoBehaviour
 
     bool PointIsViableWaypoint(Vector3 point)
     {
+        Debug.Log($"Testing viability for point: {point.x}, {point.y}, {point.z}");
         (float latitude, float longitude) = FindLatitudeLongitudeOfUnityPoint(point);
+        Debug.Log($"{latitude}, {longitude}");
 
         Vector3 cartesianPoint = CartesianConversion(latitude, longitude);
+        Debug.Log($"{cartesianPoint.x}, {cartesianPoint.y}, {cartesianPoint.z}");
 
         float azimuthToEarth = AzimuthToEarth(latitude, longitude);
         float elevationAngleToEarth = ElevationAngleToEarth(cartesianPoint);
-        float elevationAngleOfTerrain = ElevationAngleOfTerrain(cartesianPoint, azimuthToEarth);
+        // float elevationAngleOfTerrain = ElevationAngleOfTerrain(cartesianPoint, azimuthToEarth);
+        Debug.Log($"{azimuthToEarth * Mathf.Rad2Deg}, {elevationAngleToEarth * Mathf.Rad2Deg}, {{elevationAngleOfTerrain * Mathf.Rad2Deg}}");
 
-        if (elevationAngleOfTerrain < elevationAngleToEarth)
+        // if (elevationAngleOfTerrain < elevationAngleToEarth)
+        // {
+        //     return true;
+        // }
+        // else
+        // {
+        //     return false;
+        // }
+
+        RaycastHit hit;
+        Vector3 targetDirection = new Vector3(Mathf.Cos(azimuthToEarth), Mathf.Tan(elevationAngleToEarth) * 1f, Mathf.Sin(azimuthToEarth));
+        targetDirection.Normalize();
+        if (Physics.Raycast(point, targetDirection, out hit, Mathf.Infinity))
         {
-            return true;
+            return false;
         }
         else
         {
-            return false;
+            return true;
         }
     }
 
@@ -221,35 +236,46 @@ public class SetWaypoints : MonoBehaviour
         return degreeValue * Mathf.PI / 180f;
     }
 
-    float ElevationAngleOfTerrain(Vector3 point, float azimuthAngle)
-    {
-        float xDistanceForSlope = (slopeDistance * Mathf.Cos(azimuthAngle));
-        float yDistanceForSlope = (slopeDistance * Mathf.Sin(azimuthAngle));
+    // float ElevationAngleOfTerrain(Vector3 point, float azimuthAngle)
+    // {
+    //     float xDistanceForSlope = (slopeDistance * Mathf.Cos(azimuthAngle));
+    //     float yDistanceForSlope = (slopeDistance * Mathf.Sin(azimuthAngle));
 
-        Vector3 slopeSamplePoint = PointFromClosestTerrain(new Vector3(point.x + xDistanceForSlope, 0f, point.z + yDistanceForSlope));
-        float heightForSlope = point.y - slopeSamplePoint.y;
+    //     Vector3 slopeSamplePoint = PointFromClosestTerrain(new Vector3(point.x + xDistanceForSlope, 0f, point.z + yDistanceForSlope));
+    //     float heightForSlope = point.y - slopeSamplePoint.y;
 
-        float elevationAngle = Mathf.Atan(heightForSlope / slopeDistance);
+    //     float elevationAngle = Mathf.Atan(heightForSlope / slopeDistance);
 
-        return elevationAngle;
-    }
+    //     return elevationAngle;
+    // }
+
+    // This uses a formula given by NASA, but seems to be inaccurate in some way.
+    // float ElevationAngleToEarth(Vector3 point)
+    // {
+    //     float xPointToEarth = point.x - earth.x;
+    //     float yPointToEarth = point.y - earth.y;
+    //     float zPointToEarth = point.z - earth.z;
+
+    //     float earthLatitudeRadians = earthLatitude * Mathf.Deg2Rad;
+    //     float earthLongitudeRadians = earthLongitude * Mathf.Deg2Rad;
+
+    //     float range = Mathf.Sqrt(Mathf.Pow(xPointToEarth, 2f) + Mathf.Pow(yPointToEarth, 2f) + Mathf.Pow(zPointToEarth, 2f));
+    //     float rz1 = xPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Cos(earthLongitudeRadians);
+    //     float rz2 = yPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Sin(earthLongitudeRadians);
+    //     float rz3 = zPointToEarth * Mathf.Sin(earthLongitudeRadians);
+    //     float rz = rz1 + rz2 + rz3;
+
+    //     return Mathf.Asin(rz / range);
+    // }
 
     float ElevationAngleToEarth(Vector3 point)
     {
-        float xPointToEarth = point.x - earth.x;
-        float yPointToEarth = point.y - earth.y;
-        float zPointToEarth = point.z - earth.z;
+        Vector3 horizontalVectorToEarth = new Vector3(earth.x - point.x, 0f, earth.z - point.z);
+        float horizontalDistanceToEarth = horizontalVectorToEarth.magnitude;
+        float verticalDistanceToEarth = earth.y - point.y;
+        float finalAngle = Mathf.Atan2(verticalDistanceToEarth, horizontalDistanceToEarth);
 
-        float earthLatitudeRadians = earthLatitude * Mathf.Deg2Rad;
-        float earthLongitudeRadians = earthLongitude * Mathf.Deg2Rad;
-
-        float range = Mathf.Sqrt(Mathf.Pow(xPointToEarth, 2f) + Mathf.Pow(yPointToEarth, 2f) + Mathf.Pow(zPointToEarth, 2f));
-        float rz1 = xPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Cos(earthLongitudeRadians);
-        float rz2 = yPointToEarth * Mathf.Cos(earthLatitudeRadians) * Mathf.Sin(earthLongitudeRadians);
-        float rz3 = zPointToEarth * Mathf.Sin(earthLongitudeRadians);
-        float rz = rz1 + rz2 + rz3;
-
-        return Mathf.Asin(rz / range);
+        return finalAngle;
     }
 
     void CreateWaypoints(List<Vector3> waypoints)
