@@ -153,11 +153,11 @@ public class SetWaypoints : MonoBehaviour
         Vector3 firstCorner = new Vector3(0f, 0f, 0f);
         if ((cornerIndex + 1 + recursion) > (pathCorners.Length - 1))
         {
-            Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
+            firstCorner = pathCorners[cornerIndex + 1 + recursion];
         }
         else
         {
-            secondCorner = pathCorners[pathCorners.Length - 1];
+            firstCorner = pathCorners[pathCorners.Length - 1];
         }
 
         // Find the midpoint of the target segment.
