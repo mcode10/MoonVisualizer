@@ -141,8 +141,24 @@ public class SetWaypoints : MonoBehaviour
         // Set that and the corner just ahead of the distance we are looking for as the corners to compare.
         Debug.Log(pathCorners.Length);
         Debug.Log(cornerIndex);
-        Vector3 secondCorner = pathCorners[cornerIndex - 1 - recursion];
-        Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
+        Vector3 secondCorner = new Vector3(0f, 0f, 0f);
+        if (pathCorners[cornerIndex - 1 - recursion] >= 0)
+        {
+            secondCorner = pathCorners[cornerIndex - 1 - recursion];
+        }
+        else
+        {
+            secondCorner = pathCorners[0];
+        }
+        Vector3 firstCorner = new Vector3(0f, 0f, 0f);
+        if (pathCorners[cornerIndex + 1 + recursion] > (pathCorners.Length - 1))
+        {
+            Vector3 firstCorner = pathCorners[cornerIndex + 1 + recursion];
+        }
+        else
+        {
+            secondCorner = pathCorners[pathCorners.Length - 1];
+        }
 
         // Find the midpoint of the target segment.
         float midX = (secondCorner.x + firstCorner.x) / 2;
