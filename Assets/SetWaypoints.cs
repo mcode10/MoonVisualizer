@@ -32,21 +32,21 @@ public class SetWaypoints : MonoBehaviour
     void Start()
     {
         // Get the necessary Unity Game Objects.
-        UnityEngine.AI.NavMeshAgent navmesh = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        UnityEngine.AI.NavMeshPath path = navmesh.path;
-        // Replace with FindObjectOfType<Terrain>() at some point.
-        // terrain = FindObjectOfType<Terrain>();
-        // terrainData = terrain.terrainData;
+        // UnityEngine.AI.NavMeshAgent navmesh = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        //     UnityEngine.AI.NavMeshPath path = navmesh.path;
+        //     // Replace with FindObjectOfType<Terrain>() at some point.
+        //     // terrain = FindObjectOfType<Terrain>();
+        //     // terrainData = terrain.terrainData;
 
-        List<Vector3> waypoints = FindWaypoints(path);
+        //     List<Vector3> waypoints = FindWaypoints(path);
 
-        CreateWaypoints(waypoints);
-        Debug.Log(waypoints);
+        //     CreateWaypoints(waypoints);
+        //     Debug.Log(waypoints);
     }
 
     void Update() { }
 
-    List<Vector3> FindWaypoints(UnityEngine.AI.NavMeshPath path)
+    public List<Vector3> FindWaypoints(UnityEngine.AI.NavMeshPath path)
     {
         Vector3[] pathCorners = path.corners;
         float totalPathDistance = CalculatePathDistance(pathCorners);
@@ -177,7 +177,7 @@ public class SetWaypoints : MonoBehaviour
         }
     }
 
-    bool PointIsViableWaypoint(Vector3 point)
+    public bool PointIsViableWaypoint(Vector3 point)
     {
         Debug.Log($"Testing viability for point: {point.x}, {point.y}, {point.z}");
         (float latitude, float longitude) = FindLatitudeLongitudeOfUnityPoint(point);
@@ -294,7 +294,7 @@ public class SetWaypoints : MonoBehaviour
         return finalAngle;
     }
 
-    void CreateWaypoints(List<Vector3> waypoints)
+    public void CreateWaypoints(List<Vector3> waypoints)
     {
         foreach (Vector3 waypoint in waypoints)
         {
@@ -303,7 +303,7 @@ public class SetWaypoints : MonoBehaviour
         }
     }
 
-    Vector3 PointFromClosestTerrain(Vector3 position)
+    public Vector3 PointFromClosestTerrain(Vector3 position)
     {
         Terrain terrain = GetClosestCurrentTerrain(position);
 
