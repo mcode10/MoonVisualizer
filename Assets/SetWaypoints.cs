@@ -312,7 +312,7 @@ public class SetWaypoints : MonoBehaviour
         return position;
     }
 
-    Terrain GetClosestCurrentTerrain(Vector3 position)
+    public Terrain GetClosestCurrentTerrain(Vector3 position)
     {
         //Get all terrain
         Terrain[] terrains = Terrain.activeTerrains;
