@@ -141,15 +141,34 @@ public class SetWaypoints : MonoBehaviour
         // Set that and the corner just ahead of the distance we are looking for as the corners to compare.
         Debug.Log(pathCorners.Length);
         Debug.Log(cornerIndex);
-        Vector3 secondCorner = new Vector3(0f, 0f, 0f);
-        if ((cornerIndex - 1 - recursion) >= 0)
+
+        // Find the ideal corners with bounds checks.
+        Vector3 idealFirstCorner;
+        Vector3 idealSecondCorner;
+        if (cornerIndex >= 0)
         {
-            secondCorner = pathCorners[cornerIndex - 1 - recursion];
+            idealFirstCorner = pathCorners[cornerIndex];
         }
         else
         {
-            secondCorner = pathCorners[0];
+            idealFirstCorner = pathCorners[0];
         }
+
+        if (cornerIndex + 1 < pathCorners.Length - 1)
+        {
+            idealSecondCorner = pathCorners[cornerIndex + 1];
+        }
+        else
+        {
+            idealSecondCorner = pathCorners[pathCorners.Length - 1];
+        }
+
+        // Find the midpoint of the target segment.
+        float midX = (idealSecondCorner.x + idealFirstCorner.x) / 2;
+        float midY = (idealSecondCorner.y + idealFirstCorner.y) / 2;
+        float midZ = (idealSecondCorner.z + idealFirstCorner.z) / 2;
+        Vector3 segmentMidpoint = new Vector3(midX, midY, midZ);
+
         Vector3 firstCorner = new Vector3(0f, 0f, 0f);
         if ((cornerIndex + 1 + recursion) > (pathCorners.Length - 1))
         {
@@ -159,12 +178,16 @@ public class SetWaypoints : MonoBehaviour
         {
             firstCorner = pathCorners[pathCorners.Length - 1];
         }
+        Vector3 secondCorner = new Vector3(0f, 0f, 0f);
+        if ((cornerIndex - 1 - recursion) >= 0)
+        {
+            secondCorner = pathCorners[cornerIndex - 1 - recursion];
+        }
+        else
+        {
+            secondCorner = pathCorners[0];
+        }
 
-        // Find the midpoint of the target segment.
-        float midX = (secondCorner.x + firstCorner.x) / 2;
-        float midY = (secondCorner.y + firstCorner.y) / 2;
-        float midZ = (secondCorner.z + firstCorner.z) / 2;
-        Vector3 segmentMidpoint = new Vector3(midX, midY, midZ);
 
         // Determine which corner is closer.
         if (Vector3.Distance(segmentMidpoint, secondCorner) < Vector3.Distance(segmentMidpoint, firstCorner))
