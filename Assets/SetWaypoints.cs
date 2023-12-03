@@ -49,6 +49,10 @@ public class SetWaypoints : MonoBehaviour
     public List<Vector3> FindWaypoints(UnityEngine.AI.NavMeshPath path)
     {
         Vector3[] pathCorners = path.corners;
+        if (pathCorners.Length == 0)
+        {
+            throw new ArgumentException("The path is invalid and has no corners.");
+        }
         float totalPathDistance = CalculatePathDistance(pathCorners);
         float segmentLength = totalPathDistance / 11f;
         List<Vector3> waypoints = new List<Vector3>();
@@ -145,20 +149,20 @@ public class SetWaypoints : MonoBehaviour
         // Find the ideal corners with bounds checks.
         Vector3 idealFirstCorner;
         Vector3 idealSecondCorner;
-        if (cornerIndex >= 0)
+        try
         {
             idealFirstCorner = pathCorners[cornerIndex];
         }
-        else
+        catch (IndexOutOfRangeException)
         {
             idealFirstCorner = pathCorners[0];
         }
 
-        if (cornerIndex + 1 < pathCorners.Length - 1)
+        try
         {
-            idealSecondCorner = pathCorners[cornerIndex + 1];
+            idealSecondCorner = pathCorners[cornerIndex - 1];
         }
-        else
+        catch (IndexOutOfRangeException)
         {
             idealSecondCorner = pathCorners[pathCorners.Length - 1];
         }
@@ -170,26 +174,26 @@ public class SetWaypoints : MonoBehaviour
         Vector3 segmentMidpoint = new Vector3(midX, midY, midZ);
 
         Vector3 firstCorner = new Vector3(0f, 0f, 0f);
-        if ((cornerIndex + 1 + recursion) > (pathCorners.Length - 1))
+        try
         {
-            firstCorner = pathCorners[cornerIndex + 1 + recursion];
+            firstCorner = pathCorners[cornerIndex + recursion];
         }
-        else
+        catch (IndexOutOfRangeException)
         {
             firstCorner = pathCorners[pathCorners.Length - 1];
         }
         Vector3 secondCorner = new Vector3(0f, 0f, 0f);
-        if ((cornerIndex - 1 - recursion) >= 0)
+        try
         {
             secondCorner = pathCorners[cornerIndex - 1 - recursion];
         }
-        else
+        catch (IndexOutOfRangeException)
         {
             secondCorner = pathCorners[0];
         }
 
 
-        // Determine which corner is closer.
+        // Determine which corner is closer and return it in the correct order.
         if (Vector3.Distance(segmentMidpoint, secondCorner) < Vector3.Distance(segmentMidpoint, firstCorner))
         {
             return (secondCorner, firstCorner);
@@ -226,7 +230,7 @@ public class SetWaypoints : MonoBehaviour
         RaycastHit hit;
         Vector3 targetDirection = new Vector3(Mathf.Cos(azimuthToEarth), Mathf.Tan(elevationAngleToEarth) * 1f, Mathf.Sin(azimuthToEarth));
         targetDirection.Normalize();
-        if (Physics.Raycast(point, targetDirection, out hit, Mathf.Infinity))
+        if (Physics.Raycast(point, targetDirection, out hit, 2500f))
         {
             return false;
         }
@@ -342,7 +346,9 @@ public class SetWaypoints : MonoBehaviour
 
         //Make sure that terrains length is ok
         if (terrains.Length == 0)
-            return null;
+        {
+            throw new InvalidOperationException("There are no terrains in the scene to retrieve data from.");
+        }
 
         //If just one, return that one terrain
         if (terrains.Length == 1)
