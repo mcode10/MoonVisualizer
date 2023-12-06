@@ -65,7 +65,6 @@ public class SetWaypoints : MonoBehaviour
             Debug.Log(segmentNumber);
             bool foundWaypoint = false;
             int cornerRecursion = 0;
-            (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
 
             // Continue finding corners that are progressively further, then
             // verify if they satisfy the constraint. Once they do, add them as
@@ -73,6 +72,8 @@ public class SetWaypoints : MonoBehaviour
             // deep.
             while (!foundWaypoint)
             {
+                (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
+                
                 if (PointIsViableWaypoint(nearestCorner))
                 {
                     Vector3 waypoint = nearestCorner;
