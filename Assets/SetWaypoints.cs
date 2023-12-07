@@ -73,7 +73,7 @@ public class SetWaypoints : MonoBehaviour
             while (!foundWaypoint)
             {
                 (Vector3 nearestCorner, Vector3 fartherCorner) = FindNearestCorner(segmentNumber, segmentLength, pathCorners, cornerRecursion);
-                
+
                 if (PointIsViableWaypoint(nearestCorner))
                 {
                     Vector3 waypoint = nearestCorner;
@@ -122,6 +122,36 @@ public class SetWaypoints : MonoBehaviour
                 previousPoint = corner;
             }
         }
+
+        return pathDistance;
+    }
+
+    public float CalculatePathDistanceInMeters(Vector3[] pathCorners)
+    {
+        float pathDistance = 0f;
+        bool initialPoint = true;
+        Vector3 previousPoint = pathCorners[0];
+        foreach (Vector3 corner in pathCorners)
+        {
+            if (initialPoint == true)
+            {
+                previousPoint = corner;
+                initialPoint = false;
+            }
+            else
+            {
+                float segmentDistance = Vector3.Distance(previousPoint, corner);
+                pathDistance = pathDistance + segmentDistance;
+                previousPoint = corner;
+            }
+        }
+        // Convert from unity distances to lunar distances. The conversion
+        // factor is based on the fact that each degree of latitude is ~30km.
+        // That is what we are representing longitude wise as well.
+        float unityToKmConversionFactor = 2500f / 30f;
+        pathDistance = pathDistance * unityToKmConversionFactor;
+        // Convert to meters.
+        pathDistance = pathDistance * 1000f;
 
         return pathDistance;
     }
