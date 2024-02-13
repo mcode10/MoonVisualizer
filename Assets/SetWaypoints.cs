@@ -29,6 +29,10 @@ public class SetWaypoints : MonoBehaviour
     // Distance to calculate slope for elevation angle calculations.
     const float slopeDistance = 0.1f;
 
+    // Values for radio delay calculations.
+    const float distanceFromMoonToEarth = 384399f;
+    const float speedOfLight = 299792.458;
+
     void Start()
     {
         // Get the necessary Unity Game Objects.
@@ -59,7 +63,7 @@ public class SetWaypoints : MonoBehaviour
 
         List<float> segments = new List<float>();
 
-        for (int segmentNumber = 0; segmentNumber < 10; segmentNumber++)
+        for (int segmentNumber = 1; segmentNumber < 10; segmentNumber++)
         {
             Debug.Log("Started new segment calculations.");
             Debug.Log(segmentNumber);
@@ -146,9 +150,10 @@ public class SetWaypoints : MonoBehaviour
             }
         }
         // Convert from unity distances to lunar distances. The conversion
-        // factor is based on the fact that each degree of latitude is ~30km.
-        // That is what we are representing longitude wise as well.
-        float unityToKmConversionFactor = 2500f / 30f;
+        // factor is based on the fact that each degree of latitude is ~30 km.
+        // That is what we are representing longitude wise as well (skewed
+        // because of the imperfections of a Cartesian projection).
+        float unityToKmConversionFactor = 30000f / 2500f;
         pathDistance = pathDistance * unityToKmConversionFactor;
         // Convert to meters.
         pathDistance = pathDistance * 1000f;
@@ -186,7 +191,7 @@ public class SetWaypoints : MonoBehaviour
         }
         catch (IndexOutOfRangeException)
         {
-            idealFirstCorner = pathCorners[0];
+            idealFirstCorner = pathCorners[1];
         }
 
         try
@@ -220,7 +225,7 @@ public class SetWaypoints : MonoBehaviour
         }
         catch (IndexOutOfRangeException)
         {
-            secondCorner = pathCorners[0];
+            secondCorner = pathCorners[1];
         }
 
 
@@ -403,5 +408,15 @@ public class SetWaypoints : MonoBehaviour
             }
         }
         return terrains[terrainIndex];
+    }
+
+    float CalculateRadioDelay(Vector3 position)
+    {
+        (float latitude, float longitude) = FindLatitudeLongitudeOfUnityPoint(position);
+        Vector3 pointOnMoon = CartesianConversion(latitude, longitude);
+        Vector3 pointOnEarth = new Vector3(pointOnMoon.x, pointOnMoon.y + distanceFromMoonToEarth, pointOnMoon.z);
+        float distance = Vector3.Distance(pointOnEarth, position);
+        float delay = 2 * distance / speedOfLight;
+        return delay;
     }
 }
