@@ -357,11 +357,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 87050063}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f01f1a3ad72475c8ba81b9402f0f7cc3, type: 3}
+  m_Script: {fileID: 11500000, guid: 0930812f7bcb6368d9808ed3e69b35e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destination: {x: 712.7, y: 226.53, z: 1069.42}
+  startDistanceFromBottom: 0.2
+  sphereCastRadius: 0.25
+  sphereCastDistance: 0.75
+  raycastLength: 0.75
+  rayOriginOffset1: {x: -0.2, y: 0, z: 0.16}
+  rayOriginOffset2: {x: 0.2, y: 0, z: -0.16}
+  groundSlopeAngle: 0
+  groundSlopeDir: {x: 0, y: 0, z: 0}
+  showDebug: 0
+  castingMask:
+    serializedVersion: 2
+    m_Bits: 0
+  destination: {x: 0, y: 0, z: 0}
+  azimuthAngleString: 
+  slopeAngleString: 
+  elevationAngleString: 
+  coordinates: 
+  slope: 0
+  distance: 0
+  distanceString: 
   speed: 10
+  waypoints: []
 --- !u!114 &87050070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -371,9 +391,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 87050063}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46b0f00aea21833b6a18de396b7e7ff9, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b3356c588fe58f658ca65218affd31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waypointCapsule: {fileID: 0}
 --- !u!1 &104092479
 GameObject:
   m_ObjectHideFlags: 0
@@ -3857,7 +3878,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.33333334
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 0f0ab3e45a8e44d9fbf5582bc373cc87, type: 2}
   m_BuildHeightMesh: 1

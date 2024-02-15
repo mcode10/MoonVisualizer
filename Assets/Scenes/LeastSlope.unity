@@ -10043,10 +10043,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1823031750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46b0f00aea21833b6a18de396b7e7ff9, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b3356c588fe58f658ca65218affd31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypointCapsule: {fileID: 9140159650086293033, guid: 2111885d5735b694687e0f5406a27da2, type: 3}
+  waypointCapsule: {fileID: 0}
 --- !u!114 &1823031752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10056,7 +10056,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1823031750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f01f1a3ad72475c8ba81b9402f0f7cc3, type: 3}
+  m_Script: {fileID: 11500000, guid: 0930812f7bcb6368d9808ed3e69b35e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   startDistanceFromBottom: 0.2
