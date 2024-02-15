@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Stylesheet.uss?fileID=7433441132597879392&amp;guid=b66843b12de368b4fa939ee2911f9e4d&amp;type=3#Stylesheet" />
+    <ui:VisualElement class="button" style="flex-grow: 1; width: 128px; align-self: flex-end; background-color: rgba(255, 255, 255, 0.44); -unity-background-image-tint-color: rgba(135, 131, 131, 0.67); border-left-color: rgba(67, 67, 67, 0.99); border-right-color: rgba(67, 67, 67, 0.99); border-top-color: rgba(67, 67, 67, 0.99); border-bottom-color: rgba(67, 67, 67, 0.99); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; justify-content: space-around; align-items: stretch;">
+        <ui:Button text="Deploy Obstacle" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ObstacleButton" class="button" style="white-space: normal;" />
+        <ui:Button text="Model Slope" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ModelSlopeButton" class="button" style="white-space: nowrap;" />
+        <ui:Button text="Model Height" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ModelHeightButton" class="button" />
+        <ui:Button text="Collapse Controls" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CollapseControls" class="button" style="white-space: normal;" />
+    </ui:VisualElement>
+</ui:UXML>
