@@ -11207,7 +11207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3356c588fe58f658ca65218affd31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypointCapsule: {fileID: 0}
+  waypointCapsule: {fileID: 9140159650086293033, guid: 2111885d5735b694687e0f5406a27da2, type: 3}
 --- !u!114 &1932663806
 MonoBehaviour:
   m_ObjectHideFlags: 0
